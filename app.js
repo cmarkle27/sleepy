@@ -4,17 +4,19 @@ var express = require("express"),
 
 var app = express();
 
-var Product = new mongoose.Schema({
-    title: { type: String, required: true },
+var Article = new mongoose.Schema({
+    title: { type: String, required: true, unique: true },
     description: { type: String, required: true },
-    style: { type: String, unique: true },
+    author: { type: String },
+    tags: [],
+    files: [],
     modified: { type: Date, default: Date.now }
 });
 
-var ProductModel = mongoose.model('Product', Product); // new???
+var ArticleModel = mongoose.model('Article', Article);
 
 // Database
-mongoose.connect('mongodb://localhost/ecomm_database');
+mongoose.connect('mongodb://localhost/wiki_database');
 
 // Config
 app.configure(function() {
@@ -26,68 +28,64 @@ app.configure(function() {
 });
 
 // routes
-app.get('/api', function(req, res) {
-  res.send('Ecomm API is running');
-});
-
-app.get('/api/products', function (req, res){
-  return ProductModel.find(function (err, products) {
+app.get('/articles', function (req, res){
+  return ArticleModel.find(function (err, articles) {
     if (!err) {
-      return res.send(products);
+      return res.send(articles);
     } else {
       return console.log(err);
     }
   });
 });
 
-app.post('/api/products', function (req, res){
-  var product;
+app.post('/articles', function (req, res){
+  var article;
   console.log("POST: ");
   console.log(req.body);
-  product = new ProductModel({
+  // tags, files, etc... prevalidation?
+  article = new ArticleModel({
     title: req.body.title,
-    description: req.body.description,
-    style: req.body.style,
+    description: req.body.description
   });
-  product.save(function (err) {
+  article.save(function (err) {
     if (!err) {
       return console.log("created");
     } else {
       return console.log(err);
     }
   });
-  return res.send(product);
+  return res.send(article); // message instead???
 });
 
-app.get('/api/products/:id', function (req, res){
-  return ProductModel.findById(req.params.id, function (err, product) {
+app.get('/articles/:id', function (req, res){
+  return ArticleModel.findById(req.params.id, function (err, article) {
     if (!err) {
-      return res.send(product);
+      return res.send(article);
     } else {
       return console.log(err);
     }
   });
 });
 
-app.put('/api/products/:id', function (req, res){
-  return ProductModel.findById(req.params.id, function (err, product) {
-    product.title = req.body.title;
-    product.description = req.body.description;
-    product.style = req.body.style;
-    return product.save(function (err) {
+app.put('/articles/:id', function (req, res){
+  return ArticleModel.findById(req.params.id, function (err, article) {
+    article.title = req.body.title;
+    article.description = req.body.description;
+    article.modified = req.body.modified;
+    return article.save(function (err) {
       if (!err) {
         console.log("updated");
       } else {
         console.log(err);
       }
-      return res.send(product);
+      return res.send(article);
     });
   });
 });
 
-app.delete('/api/products/:id', function (req, res){
-  return ProductModel.findById(req.params.id, function (err, product) {
-    return product.remove(function (err) {
+app.delete('/articles/:id', function (req, res){
+  return ArticleModel.findById(req.params.id, function (err, article) {
+    return article.remove(function (err) {
       if (!err) {
         console.log("removed");
         return res.send('');

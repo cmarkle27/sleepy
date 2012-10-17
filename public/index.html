@@ -3,9 +3,46 @@
     <meta charset="utf-8">
     <title>HTML</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
 </head>
 
 <body>
-    <div>content</div>
+    <div id="main">
+    	<h1>Articles</h1>
+    	<div id="article-box"></div>
+    </div>
+    <script type="text/javascript">
+$(function() {
+
+	//var dataReq = $.getJSON("/articles");
+	//var tmplReq = $.get("/templates/person.tmpl");
+
+/*	$.when(dataReq).then(function(data) {
+		//$('#main').html(data);
+		console.log(data);
+	});*/
+
+	$.getJSON("/articles").done(function(res) {
+		console.log(res);
+		var tmpl = '<li><a href=# data-url=<%= _id %>><%= title %></a></li>';
+		var tmplFn = _.template(tmpl);
+		var htmls = $.map(res, function(article) {
+			return tmplFn(article);
+		});
+		$("#article-box").html("<ul class=article-list>" + htmls.join("") + "</ul>");
+	});
+
+	$('#article-box').on('click', '.article-list a', function(e) {
+		var _this = $(this);
+		var _id = _this.data("url");
+		e.preventDefault();
+		$.getJSON("/articles/"+_id).done(function(res) {
+			console.log(res);
+			$(_this).closest('li').text(res.toString());
+		});
+	});
+
+});
+    </script>
 </body>
 </html>
