@@ -128,10 +128,10 @@ $.fn.setCursorPosition = function(pos) {
 
 $(document).ready(function() {
 
-
+	// nav
 	$.getJSON("/articles").done(function(res) {
 		//console.log(res);
-		var tmpl = '<li><a href=# data-url=<%= _id %>><%= title %></a></li>';
+		var tmpl = '<li><a href=#<%= _id %>><%= title %></a></li>';
 		var tmplFn = _.template(tmpl);
 		var htmls = $.map(res, function(article) {
 			return tmplFn(article);
@@ -139,14 +139,23 @@ $(document).ready(function() {
 		$(".sidebar-nav").html("<ul class=nav nav-list>" + htmls.join("") + "</ul>");
 	});
 
-	$('.sidebar-nav').on('click', 'a', function(e) {
+	// welcome / default article
+/*	$.getJSON('/articles/507ff9a2801d42d708000001').done(function(res) {
+		console.log(res);
+		var tmpl = '<h1><%= title %></h1><%= description %>';
+		var tmplFn = _.template(tmpl);
+		var html = tmplFn(res);
+		$('#view-content').html(html);
+	});*/
+
+/*	$('.sidebar-nav').on('click', 'a', function(e) {
 		var _this = $(this);
 		var id = _this.data("url");
 		var title = _this.html();
 		e.preventDefault();
 
 		//console.log(id, title);
-		$.getJSON("/articles/"+State.data.article).done(function(res) {
+		$.getJSON("/articles/"+id).done(function(res) {
 			console.log(res);
 			var tmpl = '<h2><%= title %></h2><%= description %>';
 			var tmplFn = _.template(tmpl);
@@ -155,11 +164,7 @@ $(document).ready(function() {
 		});
 
 
-/*		$.getJSON("/articles/"+_id).done(function(res) {
-			console.log(res);
-			$(_this).closest('li').text(res.toString());
-		});*/
-	});
+	});*/
 
 
 
@@ -243,3 +248,69 @@ $(document).ready(function() {
 */
 
 });
+
+// ------------------------------------------------------------------------
+
+var AppRouter = Backbone.Router.extend({
+    routes: {
+		"": "setDefault",
+        "*actions": "defaultRoute" // matches http://example.com/#anything-here
+    },
+
+	setDefault: function() {
+		//setTimeout(function loadDefault() {
+			window.location = '/#507ef0a30631a120fd000001';
+		//}, 2000);
+	}
+
+});
+
+// Initiate the router
+var app_router = new AppRouter();
+
+app_router.on('route:defaultRoute', function(actions) {
+    console.log(actions);
+
+	$.getJSON("/articles/"+actions).done(function(res) {
+		console.log(res);
+		var tmpl = '<h1><%= title %></h1><%= description %>';
+		var tmplFn = _.template(tmpl);
+		var html = tmplFn(res);
+		$('#view-content').html(html);
+	});
+
+
+});
+
+// Start Backbone history a neccesary step for bookmarkable URL's
+//Backbone.history.start();
+Backbone.history.start();
+
+
+// default
+//app_router.navigate("507ef0a30631a120fd000001", {trigger: true, replace: true});
+
+/*var Workspace = Backbone.Router.extend({
+
+  routes: {
+    "help":                 "help",    // #help
+    ":article":             "articles",// #articles
+    "search/:query":        "search",  // #search/kiwis
+    "search/:query/p:page": "search"   // #search/kiwis/p7
+  },
+
+  help: function() {
+    //...
+  },
+
+  articles: function() {
+    //...
+    console.log("x");
+  },
+
+  search: function(query, page) {
+    //...
+    console.log("d");
+  }
+
+});*/
