@@ -1,6 +1,7 @@
 var express = require("express"),
     path = require("path"),
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    markdown = require('markdown');
 
 var app = express();
 
@@ -57,8 +58,8 @@ app.post('/articles', function (req, res){
   return res.send(article); // message instead???
 });
 
-app.get('/articles/:id', function (req, res){
-  return ArticleModel.findById(req.params.id, function (err, article) {
+app.get('/articles/:id', function(req, res) {
+  return ArticleModel.findById(req.params.id, function(err, article) {
     if (!err) {
       return res.send(article);
     } else {

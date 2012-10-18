@@ -1,22 +1,22 @@
-function close_markdown(){
+/*function close_markdown(){
 	$('#edit-content').slideUp();
 	$('#view-content').show();
 	$('#save_article').toggle();
 	$('#edit_article').toggle();
 	$('#cancel_edit_article').toggle();
 
-/*
-	$('.edit-content').fadeIn();
-	$('.markdown-container').slideUp();
-	$("#save_article", ".actions").hide();
-	$("#edit_title_form").hide();
-	$("#cancel_edit_article", ".actions").hide();
-	$("h1", ".page-header").show();
-	$("#edit_article", ".actions").show();
-	$("#delete_article", ".actions").show();
-*/
-}
 
+	// $('.edit-content').fadeIn();
+	// $('.markdown-container').slideUp();
+	// $("#save_article", ".actions").hide();
+	// $("#edit_title_form").hide();
+	// $("#cancel_edit_article", ".actions").hide();
+	// $("h1", ".page-header").show();
+	// $("#edit_article", ".actions").show();
+	// $("#delete_article", ".actions").show();
+
+}*/
+/*
 function open_markdown(){
 	$('#edit-content').slideDown();
 	$('#view-content').hide();
@@ -24,18 +24,18 @@ function open_markdown(){
 	$('#edit_article').toggle();
 	$('#cancel_edit_article').toggle();
 
-/*
-	$("#edit_title_form").show();
-	$("#save_article", ".actions").show();
-	$("#cancel_edit_article", ".actions").show();
-	$("h1", ".page-header").hide();
-	$("#edit_article", ".actions").hide();
-	$("#delete_article", ".actions").hide();
-	$("textarea.markdown").autoResize({
-		maxHeight: 100000
-	});
-*/
-}
+
+	// $("#edit_title_form").show();
+	// $("#save_article", ".actions").show();
+	// $("#cancel_edit_article", ".actions").show();
+	// $("h1", ".page-header").hide();
+	// $("#edit_article", ".actions").hide();
+	// $("#delete_article", ".actions").hide();
+	// $("textarea.markdown").autoResize({
+	// maxHeight: 100000
+	// });
+
+}*/
 
 /*
 function refresh_date(){
@@ -54,7 +54,7 @@ function refresh_date(){
 }
 */
 
-
+/*
 function saveArticle(callback) {
 
 	var id = $('#article-content').data('id');
@@ -82,17 +82,17 @@ function saveArticle(callback) {
 
 			$('#view-content').html(msg.content).prepend($title);
 
-/*
-			var $title = $("<h1>")
-				.css({
-					width: 200,
-					height: 40,
-					content: 'Algebra'
-				})
-				.attr("data-name", "title");
 
-			$('#view-content').append($title);
-*/
+			// var $title = $("<h1>")
+			// .css({
+			//		width: 200,
+			//		height: 40,
+			//	content: 'Algebra'
+			//	})
+			//	.attr("data-name", "title");
+
+			// $('#view-content').append($title);
+
 
 
 
@@ -104,7 +104,7 @@ function saveArticle(callback) {
 
 		}
 	});
-}
+}*/
 
 
 /*
@@ -138,6 +138,12 @@ $(document).ready(function() {
 		});
 		$(".sidebar-nav").html("<ul class=nav nav-list>" + htmls.join("") + "</ul>");
 	});
+
+	$(".actions").on("click", "#edit-article", function(e) {
+		window.location = '/#edit/' + $(document).data('id');
+		//app_router.navigate("edit/" + $(document).data('id'));
+	});
+
 
 	// welcome / default article
 /*	$.getJSON('/articles/507ff9a2801d42d708000001').done(function(res) {
@@ -195,10 +201,8 @@ $(document).ready(function() {
 
 
 
-	$(".actions").delegate("#edit_article", "click", function(){
-		open_markdown();
-	});
 
+/*
 	$(".actions").delegate("#cancel_edit_article", "click", function(){
 		close_markdown();
 	});
@@ -206,7 +210,7 @@ $(document).ready(function() {
 
 	$(".actions").delegate("#save_article", "click", function(){
 		saveArticle(close_markdown());
-	});
+	});*/
 
 
 
@@ -254,6 +258,7 @@ $(document).ready(function() {
 var AppRouter = Backbone.Router.extend({
     routes: {
 		"": "setDefault",
+		"edit/:id": "getPost",
         "*actions": "defaultRoute" // matches http://example.com/#anything-here
     },
 
@@ -269,22 +274,40 @@ var AppRouter = Backbone.Router.extend({
 var app_router = new AppRouter();
 
 app_router.on('route:defaultRoute', function(actions) {
-    console.log(actions);
 
 	$.getJSON("/articles/"+actions).done(function(res) {
-		console.log(res);
 		var tmpl = '<h1><%= title %></h1><%= description %>';
 		var tmplFn = _.template(tmpl);
-		var html = tmplFn(res);
-		$('#view-content').html(html);
-	});
+		var html;
 
+		res.description = markdown.toHTML(res.description);
+		html = tmplFn(res);
+
+		$('#view-content').html(html);
+		$(document).data('id', res._id); // or store in memory?
+
+		console.log(res, $(document).data());
+	});
 
 });
 
+app_router.on('route:getPost', function(id) {
+
+	$.getJSON("/articles/"+id).done(function(res) {
+		var tmpl = '<h1><%= title %></h1><textarea name="article-content" id="article-content" rows="10"><%= description %></textarea>';
+		var tmplFn = _.template(tmpl);
+		var html = tmplFn(res);
+		$('#view-content').html(html);
+		$(document).data('id', res._id); // or store in memory?
+		console.log($(document).data());
+	});
+
+});
+
+
 // Start Backbone history a neccesary step for bookmarkable URL's
 //Backbone.history.start();
-Backbone.history.start();
+Backbone.history.start(); // pushstate?
 
 
 // default
@@ -312,5 +335,5 @@ Backbone.history.start();
     //...
     console.log("d");
   }
-
+<textarea name="article-content" id="article-content" rows="10" data-id="<?php echo $this->article->article_id;?>" data-oper="edit"><?php echo $this->article->content;?></textarea>
 });*/
