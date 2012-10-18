@@ -140,40 +140,14 @@ $(document).ready(function() {
 	});
 
 	$(".actions").on("click", "#edit-article", function(e) {
+		e.preventDefault();
 		window.location = '/#edit/' + $(document).data('id');
-		//app_router.navigate("edit/" + $(document).data('id'));
 	});
 
-
-	// welcome / default article
-/*	$.getJSON('/articles/507ff9a2801d42d708000001').done(function(res) {
-		console.log(res);
-		var tmpl = '<h1><%= title %></h1><%= description %>';
-		var tmplFn = _.template(tmpl);
-		var html = tmplFn(res);
-		$('#view-content').html(html);
-	});*/
-
-/*	$('.sidebar-nav').on('click', 'a', function(e) {
-		var _this = $(this);
-		var id = _this.data("url");
-		var title = _this.html();
+	$(".actions").on("click", "#cancel-edit", function(e) {
 		e.preventDefault();
-
-		//console.log(id, title);
-		$.getJSON("/articles/"+id).done(function(res) {
-			console.log(res);
-			var tmpl = '<h2><%= title %></h2><%= description %>';
-			var tmplFn = _.template(tmpl);
-			var html = tmplFn(res);
-			$('#view-content').html(html);
-		});
-
-
-	});*/
-
-
-
+		window.location = '/#' + $(document).data('id');
+	});
 
 /*
 	key('⌘+s, ctrl+s', function(event, handler){
@@ -256,16 +230,15 @@ $(document).ready(function() {
 // ------------------------------------------------------------------------
 
 var AppRouter = Backbone.Router.extend({
+
     routes: {
 		"": "setDefault",
 		"edit/:id": "getPost",
-        "*actions": "defaultRoute" // matches http://example.com/#anything-here
+        "*actions": "defaultRoute"
     },
 
 	setDefault: function() {
-		//setTimeout(function loadDefault() {
-			window.location = '/#507ef0a30631a120fd000001';
-		//}, 2000);
+		window.location = '/#507ef0a30631a120fd000001';
 	}
 
 });
@@ -283,6 +256,10 @@ app_router.on('route:defaultRoute', function(actions) {
 		res.description = markdown.toHTML(res.description);
 		html = tmplFn(res);
 
+		$('#edit-article').show();
+		$('#save-article').hide();
+		$('#cancel-edit').hide();
+
 		$('#view-content').html(html);
 		$(document).data('id', res._id); // or store in memory?
 
@@ -297,43 +274,18 @@ app_router.on('route:getPost', function(id) {
 		var tmpl = '<h1><%= title %></h1><textarea name="article-content" id="article-content" rows="10"><%= description %></textarea>';
 		var tmplFn = _.template(tmpl);
 		var html = tmplFn(res);
+
 		$('#view-content').html(html);
+
+		$('#edit-article').hide();
+		$('#save-article').show();
+		$('#cancel-edit').show();
+
 		$(document).data('id', res._id); // or store in memory?
 		console.log($(document).data());
 	});
 
 });
 
-
 // Start Backbone history a neccesary step for bookmarkable URL's
-//Backbone.history.start();
 Backbone.history.start(); // pushstate?
-
-
-// default
-//app_router.navigate("507ef0a30631a120fd000001", {trigger: true, replace: true});
-
-/*var Workspace = Backbone.Router.extend({
-
-  routes: {
-    "help":                 "help",    // #help
-    ":article":             "articles",// #articles
-    "search/:query":        "search",  // #search/kiwis
-    "search/:query/p:page": "search"   // #search/kiwis/p7
-  },
-
-  help: function() {
-    //...
-  },
-
-  articles: function() {
-    //...
-    console.log("x");
-  },
-
-  search: function(query, page) {
-    //...
-    console.log("d");
-  }
-<textarea name="article-content" id="article-content" rows="10" data-id="<?php echo $this->article->article_id;?>" data-oper="edit"><?php echo $this->article->content;?></textarea>
-});*/
