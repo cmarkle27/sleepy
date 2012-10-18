@@ -4,45 +4,81 @@
     <title>HTML</title>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js"></script>
+    <script src="./js/backbone-min.js"></script>
+    <link href="./bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="./css/default.css" rel="stylesheet">
 </head>
 
 <body>
-    <div id="main">
-    	<h1>Articles</h1>
-    	<div id="article-box"></div>
+
+	<div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Project name</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+            <p class="navbar-text pull-right">Logged in as <a href="#">username</a></p>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
     </div>
-    <script type="text/javascript">
-$(function() {
 
-	//var dataReq = $.getJSON("/articles");
-	//var tmplReq = $.get("/templates/person.tmpl");
+    <div class="container-fluid">
 
-/*	$.when(dataReq).then(function(data) {
-		//$('#main').html(data);
-		console.log(data);
-	});*/
+<div class="row-fluid">
 
-	$.getJSON("/articles").done(function(res) {
-		console.log(res);
-		var tmpl = '<li><a href=# data-url=<%= _id %>><%= title %></a></li>';
-		var tmplFn = _.template(tmpl);
-		var htmls = $.map(res, function(article) {
-			return tmplFn(article);
-		});
-		$("#article-box").html("<ul class=article-list>" + htmls.join("") + "</ul>");
-	});
+    <div class="span9">
+      <div class="hero-unit">
+      	<div class="actions">
+     	<button id="edit_article" class="btn">Edit</button>
+     	<button id="save_article" class="btn btn-primary" style="display:none;">Save</button>
+     	<button id="cancel_edit_article" class="btn" style="display:none;">Cancel</button>
+		</div>
 
-	$('#article-box').on('click', '.article-list a', function(e) {
-		var _this = $(this);
-		var _id = _this.data("url");
-		e.preventDefault();
-		$.getJSON("/articles/"+_id).done(function(res) {
-			console.log(res);
-			$(_this).closest('li').text(res.toString());
-		});
-	});
+		<div id="view-content">
+			<h1><?php echo $this->article->title;?></h1>
+		    <?php echo $this->markDown;?>
+		</div>
+		<div id="edit-content" style="display:none;">
+			<form>
+				<label for="edit_title">Title
+				<input type="text" id="edit_title" value="<?php echo $this->article->title;?>"></label>
+				<label for="edit_subtitle">Description
+				<input type="text" id="edit_subtitle" value="<?php echo $this->article->subtitle;?>"></label>
+				<textarea name="article-content" id="article-content" rows="10" data-id="<?php echo $this->article->article_id;?>" data-oper="edit"><?php echo $this->article->content;?></textarea>
+			</form>
+		</div>
+	  </div>
+    </div><!--/span-->
 
-});
-    </script>
+    <div class="span3">
+      <div class="well sidebar-nav"></div>
+    </div><!--/span-->
+
+</div><!--/row-->
+
+
+<!-- 	    <div id="main">
+	    	<h1>Articles</h1>
+	    	<div id="article-box"></div>
+	    </div> -->
+
+      <hr>
+
+      <footer>
+        <p>&copy; CxAlloy 2012</p>
+      </footer>
+
+    </div>
+
 </body>
 </html>
